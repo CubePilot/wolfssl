@@ -1269,7 +1269,9 @@ extern void uITRON4_free(void *p) ;
     #if !defined(__GNUC__) && !defined(__ICCARM__)
         #define KEIL_INTRINSICS
     #endif
-    #define NO_OLD_RNGNAME
+    #ifndef NO_OLD_RNGNAME
+        #define NO_OLD_RNGNAME
+    #endif
     #ifdef WOLFSSL_STM32_CUBEMX
         #if defined(WOLFSSL_STM32F1)
             #include "stm32f1xx_hal.h"
