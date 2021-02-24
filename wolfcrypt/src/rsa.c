@@ -4177,8 +4177,7 @@ int wc_MakeRsaKey(RsaKey* key, int size, long e, WC_RNG* rng)
         i = 0;
         do {
 #ifdef SHOW_GEN
-            printf(".");
-            fflush(stdout);
+        show_gen_printf("+");
 #endif
             /* generate value */
             err = wc_RNG_GenerateBlock(rng, buf, primeSz);
@@ -4212,8 +4211,7 @@ int wc_MakeRsaKey(RsaKey* key, int size, long e, WC_RNG* rng)
         i = 0;
         do {
 #ifdef SHOW_GEN
-            printf(".");
-            fflush(stdout);
+        show_gen_printf("+");
 #endif
             /* generate value */
             err = wc_RNG_GenerateBlock(rng, buf, primeSz);

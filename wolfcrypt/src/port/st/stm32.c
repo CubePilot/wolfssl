@@ -22,9 +22,7 @@
 /* Generic STM32 Hashing Function */
 /* Supports CubeMX HAL or Standard Peripheral Library */
 
-#ifdef HAVE_CONFIG_H
-    #include <config.h>
-#endif
+#include <wolfssl/options.h>
 
 #include <wolfssl/wolfcrypt/settings.h>
 
@@ -54,11 +52,9 @@
 #ifndef STM32_HASH_CLOCK_ENABLE
     static WC_INLINE void wc_Stm32_Hash_Clock_Enable(STM32_HASH_Context* stmCtx)
     {
-    #ifdef WOLFSSL_STM32_CUBEMX
-        __HAL_RCC_HASH_CLK_ENABLE();
-    #else
-        RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_HASH, ENABLE);
-    #endif
+        RCC->AHB2ENR  |= RCC_AHB2ENR_HASHEN;
+        RCC->AHB2RSTR |= RCC_AHB2RSTR_HASHRST;
+        RCC->AHB2RSTR &= ~RCC_AHB2RSTR_HASHRST;
         (void)stmCtx;
     }
     #define STM32_HASH_CLOCK_ENABLE(ctx) wc_Stm32_Hash_Clock_Enable(ctx)
@@ -67,11 +63,7 @@
 #ifndef STM32_HASH_CLOCK_DISABLE
     static WC_INLINE void wc_Stm32_Hash_Clock_Disable(STM32_HASH_Context* stmCtx)
     {
-    #ifdef WOLFSSL_STM32_CUBEMX
-        __HAL_RCC_HASH_CLK_DISABLE();
-    #else
-        RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_HASH, DISABLE);
-    #endif
+        RCC->AHB2ENR  &= ~RCC_AHB2ENR_HASHEN;
         (void)stmCtx;
     }
     #define STM32_HASH_CLOCK_DISABLE(ctx) wc_Stm32_Hash_Clock_Disable(ctx)
@@ -183,7 +175,7 @@ int wc_Stm32_Hash_Update(STM32_HASH_Context* stmCtx, word32 algo,
         HASH->CR &= ~(HASH_CR_ALGO | HASH_CR_DATATYPE | HASH_CR_MODE);
 
         /* configure algorithm, mode and data type */
-        HASH->CR |= (algo | HASH_ALGOMODE_HASH | HASH_DATATYPE_8B);
+        HASH->CR |= (algo | HASH_CR_DATATYPE_1);
 
         /* reset HASH processor */
         HASH->CR |= HASH_CR_INIT;
